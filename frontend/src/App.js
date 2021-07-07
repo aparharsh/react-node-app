@@ -15,6 +15,7 @@ export class App extends Component {
   async componentDidUpdate(){
     let res = await this.getapi("http://localhost:8000");
     console.log(res);
+    // this.setState({ data: res });
   }
 
   change = (e) =>{
@@ -25,7 +26,15 @@ export class App extends Component {
 
   submit = (e) =>{
     e.preventDefault();
-    console.log(e.target);
+    console.log(this.state.input);
+    fetch("http://localhost:8000/new", {
+      method: "POST",
+      headers: {"Content-Type": "text/plain"},
+      body: this.state.input
+    })
+    .then( (response) => response.json())
+    .then( (responseJson) => { console.log("Success") })
+    .catch( (err) => { console.log(err) })
   }
 
   getapi = async(url) =>{
