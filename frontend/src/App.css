@@ -5,3 +5,29 @@ body{
 .main{
   text-align: center;
 }
+
+.item{
+  text-align: left;
+  background-color: aliceblue;
+  border-radius: 15px;
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 5px;
+  padding: 5px 10px;
+  transition: ease-in-out 0.3s;
+}
+
+.item:hover{
+  transition:  ease-in-out 0.3s;
+  transform : scale(1.06);
+  cursor: pointer;
+}
+
+.deleteBtn{
+  border-radius: 5px;
+  background-color: aquamarine;
+  display: flex;
+  float: right;
+  
+}

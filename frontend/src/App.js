@@ -1,9 +1,9 @@
 import './App.css';
-
-import React, { Component } from 'react'
+import axios from 'axios';
+import React, { Component } from 'react';
 
 export class App extends Component {
-
+  
   constructor(props){
     super(props);
     this.state={
@@ -11,11 +11,45 @@ export class App extends Component {
       data : []
     }
   }
+  
+  getapi = async(url) =>{
+    return fetch(url)
+          .then( ( response ) => response.json() )
+          .then( ( responseJson ) => { return responseJson } )
+          .catch( (err) => {
+            console.log(err);
+            alert("Something went wrong in retrieving data.");
+          } );
+  }
+
+  async componentDidMount(){
+
+    let error = true;
+    let res = await axios.get("http://localhost:8000/items").then(function (response){
+      error = false;
+      return response.data;
+    }).catch(function (error) {
+      console.log(error);
+      alert("Some error occured.")
+    });
+
+    if( !error ) this.setState({ data: res });
+
+  }
 
   async componentDidUpdate(){
-    let res = await this.getapi("http://localhost:8000");
-    console.log(res);
-    // this.setState({ data: res });
+
+    let error = true;
+    let res = await axios.get("http://localhost:8000/items").then(function (response){
+      error = false;
+      return response.data;
+    }).catch(function (error) {
+      console.log(error);
+      alert("Some error occured.")
+    });
+
+    if( !error ) this.setState({ data: res });
+    
   }
 
   change = (e) =>{
@@ -24,39 +58,44 @@ export class App extends Component {
     })
   }
 
-  submit = (e) =>{
+  submit = async (e) =>{
     e.preventDefault();
+
     console.log(this.state.input);
-    fetch("http://localhost:8000/new", {
-      method: "POST",
-      headers: {"Content-Type": "text/plain"},
-      body: this.state.input
-    })
-    .then( (response) => response.json())
-    .then( (responseJson) => { console.log("Success") })
-    .catch( (err) => { console.log(err) })
-  }
 
-  getapi = async(url) =>{
-    return fetch(url)
-          .then( ( response ) => response.json() )
-          .then( ( responseJson ) => { return responseJson } )
-          .catch( (err) => {
-            console.log(err);
-            alert("Something went wrong.");
-          } );
-  }
+    let error = true;
+    await axios.post("http://localhost:8000/itemsPost", {
+      'name' : this.state.input
+    }).then(function (response){
+      console.log("Success");
+      error = false;
+    }).catch(function (error) {
+      console.log(error);
+      alert("Some error occured in sending data.")
+    });
 
-  // otherApi = async(e) =>{
-  //   return 
-  // }
+    console.log(error)
+    if( !error ) this.setState( { input:"" } )
+  }
+  
+  delete = async (e) =>{
+    console.log(e);
+
+    await axios.delete("http://localhost:8000/items/"+e.target.id, {
+      'name' : this.state.input
+    }).then(function (response){
+      console.log("Success");
+    }).catch(function (error) {
+      console.log(error);
+      alert("Some error occured in sending data.")
+    });
+  }
 
   render() {
-    console.log(this.state.data)
     let p;
     p = this.state.data.map(item => {
       return(
-      <div key={item}>{item}</div>
+      <div className="item" key={item._id} >{item.name} <button className="deleteBtn" id={item._id} onClick={this.delete}>Delete</button></div>
       )
     })
 
@@ -65,12 +104,12 @@ export class App extends Component {
       <div>
         <div className="main">
           <h1>
-            To-do list App
+            Tanya's To-do list App
           </h1>
           <br></br>
           <br></br>
           <form onSubmit={this.submit}>
-            <input type="text" name="input" onChange={this.change} placeholder="Type some activity to add" required />
+            <input type="text" name="input" onChange={this.change} value={this.state.input} placeholder="Type some activity to add" required />
             <br></br>
             <br></br>
             <input type="submit"/>
