@@ -1,10 +1,15 @@
 const express = require('express');
 require("../src/db/conn");
-
 const Goodies = require("../src/models/items")
 const app = express();
 const port = process.env.PORT || 8000;
 app.use(express.json());
+
+// CORS
+const cors = require('cors');
+app.use(cors({
+    origin: 'http://localhost:3000'
+}));
 // we will handle a post request 
 
 // DELETE
